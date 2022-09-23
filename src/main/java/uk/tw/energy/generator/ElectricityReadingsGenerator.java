@@ -1,5 +1,6 @@
 package uk.tw.energy.generator;
 
+import reactor.core.publisher.Flux;
 import uk.tw.energy.domain.ElectricityReading;
 
 import java.math.BigDecimal;
@@ -12,7 +13,7 @@ import java.util.Random;
 
 public class ElectricityReadingsGenerator {
 
-    public List<ElectricityReading> generate(int number) {
+    public Flux<List<ElectricityReading>> generate(int number) {
         List<ElectricityReading> readings = new ArrayList<>();
         Instant now = Instant.now();
 
@@ -25,6 +26,7 @@ public class ElectricityReadingsGenerator {
         }
 
         readings.sort(Comparator.comparing(ElectricityReading::getTime));
-        return readings;
+        Flux<List<ElectricityReading>> electricalReadingsList = Flux.just(readings);
+        return electricalReadingsList;
     }
 }

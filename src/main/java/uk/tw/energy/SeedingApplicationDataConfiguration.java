@@ -1,11 +1,12 @@
 package uk.tw.energy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature; 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import reactor.core.publisher.Flux;
 import uk.tw.energy.domain.ElectricityReading;
 import uk.tw.energy.domain.PricePlan;
 import uk.tw.energy.generator.ElectricityReadingsGenerator;
@@ -26,33 +27,36 @@ public class SeedingApplicationDataConfiguration {
     private static final String STANDARD_PRICE_PLAN_ID = "price-plan-2";
 
     @Bean
-    public List<PricePlan> pricePlans() {
+    public Flux<List<PricePlan>> pricePlans() {
         final List<PricePlan> pricePlans = new ArrayList<>();
         pricePlans.add(new PricePlan(MOST_EVIL_PRICE_PLAN_ID, "Dr Evil's Dark Energy", BigDecimal.TEN, emptyList()));
         pricePlans.add(new PricePlan(RENEWABLES_PRICE_PLAN_ID, "The Green Eco", BigDecimal.valueOf(2), emptyList()));
         pricePlans.add(new PricePlan(STANDARD_PRICE_PLAN_ID, "Power for Everyone", BigDecimal.ONE, emptyList()));
-        return pricePlans;
+        Flux<List<PricePlan>> pricePlanList = Flux.just(pricePlans);
+        return pricePlanList;
     }
 
     @Bean
-    public Map<String, List<ElectricityReading>> perMeterElectricityReadings() {
+    public Flux<Map<String, List<ElectricityReading>>> perMeterElectricityReadings() {
         final Map<String, List<ElectricityReading>> readings = new HashMap<>();
         final ElectricityReadingsGenerator electricityReadingsGenerator = new ElectricityReadingsGenerator();
-        smartMeterToPricePlanAccounts()
+        smartMeterToPricePlanAccounts().blockFirst()
                 .keySet()
-                .forEach(smartMeterId -> readings.put(smartMeterId, electricityReadingsGenerator.generate(20)));
-        return readings;
+                .forEach(smartMeterId -> readings.put(smartMeterId, electricityReadingsGenerator.generate(20).blockFirst()));
+        Flux<Map<String, List<ElectricityReading>>> electricalReadingsList = Flux.just(readings);
+        return electricalReadingsList;
     }
 
     @Bean
-    public Map<String, String> smartMeterToPricePlanAccounts() {
+    public Flux<Map<String, String>>  smartMeterToPricePlanAccounts() {
         final Map<String, String> smartMeterToPricePlanAccounts = new HashMap<>();
         smartMeterToPricePlanAccounts.put("smart-meter-0", MOST_EVIL_PRICE_PLAN_ID);
         smartMeterToPricePlanAccounts.put("smart-meter-1", RENEWABLES_PRICE_PLAN_ID);
         smartMeterToPricePlanAccounts.put("smart-meter-2", MOST_EVIL_PRICE_PLAN_ID);
         smartMeterToPricePlanAccounts.put("smart-meter-3", STANDARD_PRICE_PLAN_ID);
         smartMeterToPricePlanAccounts.put("smart-meter-4", RENEWABLES_PRICE_PLAN_ID);
-        return smartMeterToPricePlanAccounts;
+        Flux<Map<String, String>> pricePlanList = Flux.just(smartMeterToPricePlanAccounts);
+        return pricePlanList;
     }
 
     @Bean

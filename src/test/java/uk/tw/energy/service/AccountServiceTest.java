@@ -3,6 +3,8 @@ package uk.tw.energy.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import reactor.core.publisher.Flux;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +21,8 @@ public class AccountServiceTest {
     public void setUp() {
         Map<String, String> smartMeterToPricePlanAccounts = new HashMap<>();
         smartMeterToPricePlanAccounts.put(SMART_METER_ID, PRICE_PLAN_ID);
-
-        accountService = new AccountService(smartMeterToPricePlanAccounts);
+        Flux<Map<String, String>> smartMeterToPricePlanAccount = Flux.just(smartMeterToPricePlanAccounts);
+        accountService = new AccountService(smartMeterToPricePlanAccount);
     }
 
     @Test

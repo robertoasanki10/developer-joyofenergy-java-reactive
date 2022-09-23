@@ -3,6 +3,8 @@ package uk.tw.energy.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+
+import reactor.core.publisher.Flux;
 import uk.tw.energy.domain.ElectricityReading;
 import uk.tw.energy.domain.PricePlan;
 import uk.tw.energy.service.AccountService;
@@ -38,11 +40,13 @@ public class PricePlanComparatorControllerTest {
         PricePlan pricePlan3 = new PricePlan(PRICE_PLAN_3_ID, null, BigDecimal.valueOf(2), null);
 
         List<PricePlan> pricePlans = Arrays.asList(pricePlan1, pricePlan2, pricePlan3);
-        PricePlanService tariffService = new PricePlanService(pricePlans, meterReadingService);
+        Flux<List<PricePlan>> pricePlan = Flux.just(pricePlans);
+        PricePlanService tariffService = new PricePlanService(pricePlan, meterReadingService);
 
         Map<String, String> meterToTariffs = new HashMap<>();
         meterToTariffs.put(SMART_METER_ID, PRICE_PLAN_1_ID);
-        accountService = new AccountService(meterToTariffs);
+        Flux<Map<String, String>> meterToTariff = Flux.just(meterToTariffs);
+        accountService = new AccountService(meterToTariff);
 
         controller = new PricePlanComparatorController(tariffService, accountService);
     }

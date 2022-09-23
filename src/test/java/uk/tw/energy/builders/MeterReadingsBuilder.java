@@ -1,5 +1,6 @@
 package uk.tw.energy.builders;
 
+import reactor.core.publisher.Flux;
 import uk.tw.energy.domain.ElectricityReading;
 import uk.tw.energy.domain.MeterReadings;
 import uk.tw.energy.generator.ElectricityReadingsGenerator;
@@ -12,7 +13,7 @@ public class MeterReadingsBuilder {
     private static final String DEFAULT_METER_ID = "id";
 
     private String smartMeterId = DEFAULT_METER_ID;
-    private List<ElectricityReading> electricityReadings = new ArrayList<>();
+    private Flux<List<ElectricityReading>> electricityReadings;
 
     public MeterReadingsBuilder setSmartMeterId(String smartMeterId) {
         this.smartMeterId = smartMeterId;
@@ -30,6 +31,6 @@ public class MeterReadingsBuilder {
     }
 
     public MeterReadings build() {
-        return new MeterReadings(smartMeterId, electricityReadings);
+        return new MeterReadings(smartMeterId, electricityReadings.blockFirst());
     }
 }

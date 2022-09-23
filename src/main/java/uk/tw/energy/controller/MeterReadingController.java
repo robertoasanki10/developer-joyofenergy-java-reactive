@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import uk.tw.energy.domain.ElectricityReading;
 import uk.tw.energy.domain.MeterReadings;
 import uk.tw.energy.service.MeterReadingService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/readings")
@@ -43,9 +43,10 @@ public class MeterReadingController {
 
     @GetMapping("/read/{smartMeterId}")
     public ResponseEntity readReadings(@PathVariable String smartMeterId) {
-        Optional<List<ElectricityReading>> readings = meterReadingService.getReadings(smartMeterId);
-        return readings.isPresent()
-                ? ResponseEntity.ok(readings.get())
-                : ResponseEntity.notFound().build();
+        Flux<List<ElectricityReading>> readings = meterReadingService.getReadings(smartMeterId);
+        return readings.count().blockOptional().get() == 0
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok(readings.blockFirst());
+         
     }
 }
