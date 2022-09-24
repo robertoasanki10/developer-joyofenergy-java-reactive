@@ -44,7 +44,6 @@ public class PricePlanComparatorController {
         Map<String, Object> pricePlanComparisons = new HashMap<>();
         pricePlanComparisons.put(PRICE_PLAN_ID_KEY, pricePlanId);
         pricePlanComparisons.put(PRICE_PLAN_COMPARISONS_KEY, consumptionsForPricePlans.blockFirst().entrySet());
-        System.err.println(consumptionsForPricePlans.count().blockOptional().get() == 0);
         return consumptionsForPricePlans.count().blockOptional().get() == 0
                 ? ResponseEntity.notFound().build()
                 : ResponseEntity.ok(pricePlanComparisons);

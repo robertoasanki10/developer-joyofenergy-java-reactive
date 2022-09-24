@@ -26,7 +26,6 @@ public class ElectricityReadingsGenerator {
         }
 
         readings.sort(Comparator.comparing(ElectricityReading::getTime));
-        Flux<List<ElectricityReading>> electricalReadingsList = Flux.just(readings);
-        return electricalReadingsList;
+        return Flux.just(readings);
     }
 }
