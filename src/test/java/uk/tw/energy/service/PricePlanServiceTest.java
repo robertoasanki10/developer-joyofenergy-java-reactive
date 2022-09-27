@@ -50,7 +50,7 @@ public class PricePlanServiceTest{
 
 
     @Test
-    public void shouldGetEmptyPlan(){
+    public void shouldGetBestPlan(){
         Flux<Map<String, BigDecimal>> result = pricePlanService.
         getConsumptionCostOfElectricityReadingsForEachPricePlan(SMART_METER_ID);      
             assertThat(result.blockFirst().entrySet().stream()
